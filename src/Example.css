@@ -1,0 +1,87 @@
+.evenRow {
+
+}
+
+.oddRow {
+  background-color: rgba(128, 128, 128, 0.1);
+}
+
+.cell,
+.headerCell {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding-left: 4px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cell {
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.selected {
+  background-color: rgba(128, 215, 255, 0.2);
+}
+
+.headerCell {
+  justify-content: flex-start;
+  align-content: stretch;
+  border-right: 1px solid rgba(128, 128, 128, 0.2);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+  background-color: white;
+}
+
+.bp3-dark .headerCell {
+  background-color: #222;
+  color: white;
+}
+
+.headerGrid {
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  outline: none;
+}
+
+.grid {
+  outline: none
+}
+
+.noCells {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1em;
+  color: #bdbdbd;
+}
+
+.headerCell .splitter {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  margin-left: -8px;
+  margin-right: -8px;
+  background-color: transparent;
+  cursor: ew-resize;
+  z-index: 1000;
+}
+
+.bp3-dark .client {
+  background-color: #222;
+  color: white;
+}
+
+.client {
+  background-color: white;
+  font-family: 'Maven Pro';
+  font-size: 13px;
+}

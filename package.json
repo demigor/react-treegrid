@@ -1,0 +1,31 @@
+{
+  "name": "new-grid",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@blueprintjs/core": "^3.7.0",
+    "@blueprintjs/icons": "^3.2.0",
+    "classnames": "^2.2.6",
+    "react": "^16.7.0-alpha.0",
+    "react-dom": "^16.7.0-alpha.0",
+    "react-draggable": "^3.0.5",
+    "react-scripts": "^2.0.5",
+    "react-virtualized": "^9.20.1",
+    "react-window": "^1.2.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
