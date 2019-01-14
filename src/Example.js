@@ -17,7 +17,7 @@ function generateData(count, colCount) {
 }
 
 export default () => (<div className="bp3-dark">
-  <TreeGrid rows={generateData(1000, 5)} className="client" style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0 }}>
+  <TreeGrid rows={generateData(1000, 5)} className="client" style={{ position: 'fixed', left: 0, top: 0, right: 0, bottom: 0 }} sortBy="col1,-col2,col3">
     <Column width={200} label="Column 1" dataKey="col1" minWidth={50} className="center" />
     <Column width={200} label="Column 2" dataKey="col2" minWidth={50} className="right headerCenter"/>
     <Column width={300} label="Column 3" dataKey="col3" minWidth={50} className="center headerLeft"/>

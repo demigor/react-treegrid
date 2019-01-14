@@ -38,10 +38,27 @@
   border-right: 1px solid rgba(128, 128, 128, 0.2);
   border-bottom: 1px solid rgba(128, 128, 128, 0.2);
   background-color: white;
+  cursor: default;
 }
 
 .headerCell.headerLeft {
   justify-content: flex-start;
+}
+
+.headerCell.sort-asc::before {
+  content: "▲";
+  /* content: "△"; */
+  margin-left: 0px;
+  margin-right: 4px;
+  font-family: "Segoe UI Symbol";
+}
+
+.headerCell.sort-desc::before {
+  content: "▼";
+  /* content: "▽"; */
+  margin-left: 0px;
+  margin-right: 4px;
+  font-family: "Segoe UI Symbol";
 }
 
 .cell.left {
