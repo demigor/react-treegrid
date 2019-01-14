@@ -1,10 +1,10 @@
 import React from 'react'
 import cn from 'classnames'
 import { ResizeSensor } from '@blueprintjs/core'
-import { VariableSizeGrid as Grid } from 'react-window'
+import { FixedSizeList as Grid } from 'react-window'
 import Draggable from 'react-draggable'
 import scrollbarSize from 'dom-helpers/util/scrollbarSize'
-import './Example.css'
+import './Example-window.css'
 
 export class Column extends React.PureComponent {
   static defaultProps = {
@@ -317,8 +317,7 @@ class TreeGrid extends React.PureComponent {
             noContentRenderer={this.renderNoCells}
             columnWidth={index => widths[index]}
             columnCount={widths.length}
-            overscanColumns={0}
-            overscanRows={10}
+            overscanCount={10}
             scrollToRow={scrollToRow}
             scrollToColumn={scrollToColumn}
             estimatedRowHeight={rowHeight}
