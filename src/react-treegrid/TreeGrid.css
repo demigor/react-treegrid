@@ -1,0 +1,19 @@
+﻿.tgt .expander {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-family: "Segoe UI Symbol";
+}
+
+.tgt .expander::before {
+  content: "▶";
+}
+
+.tgt .expander.expanded::before {
+  content: "▽";
+}

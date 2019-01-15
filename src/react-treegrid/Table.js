@@ -76,10 +76,10 @@ export const Table = memo(props => {
 
   let section = useRef(sectionSetup)
 
-  let headerRef = useRef()
-  let clientRef = useRef()
+  let headerGridRef = useRef()
+  let dataGridRef = useRef()
 
-  let { rowHeight, rows, className, getRowStyle, getRowClassName, children, scrollToColumn: stc, scrollToRow: str, sortBy, emptyText, disableHeader, onSort, onSelect, ...rest } = props
+  let { rowHeight, rows, className, getRowStyle, getRowClassName, children, scrollToColumn: stc, interactive, striped, cellRenderer, scrollToRow: str, sortBy, emptyText, disableHeader, onSortChange, onMore, onSelect, ...rest } = props
   let rowCount = rows && rows.length
 
   let sorting = useMemo(() => sortBy && Array.isArray(sortBy) ? sortBy : (sortBy || "").split(','), [sortBy])
@@ -131,8 +131,8 @@ export const Table = memo(props => {
 
   function setStateAndRecalc(state, compute) {
     setState(s => ({ ...s, ...state }))
-    headerRef.current && headerRef.current.recomputeGridSize(compute)
-    clientRef.current && clientRef.current.recomputeGridSize(compute)
+    headerGridRef.current && headerGridRef.current.recomputeGridSize(compute)
+    dataGridRef.current && dataGridRef.current.recomputeGridSize(compute)
   }
 
   function scrollBarPresenceChanged({ vertical, size }) {
@@ -164,6 +164,7 @@ export const Table = memo(props => {
       pageSizeY: rowStopIndex - rowStartIndex,
       pageSizeX: columnStopIndex - columnStartIndex
     }
+    if (onMore && rowStopIndex === rowCount) onMore()
   }, [section])
 
   let scroll = useCallback(({ scrollLeft }) => setState(s => ({ ...s, scrollLeft })), [])
@@ -180,17 +181,17 @@ export const Table = memo(props => {
     }
 
     let click
-    if (onSort && !column.disableSort) {
+    if (onSortChange && !column.disableSort) {
       if (sortDesc)
-        click = e => onSort(column.dataKey, args, e)
+        click = e => onSortChange(column.dataKey, args, e)
       else
-        click = e => onSort("-" + column.dataKey, args, e)
+        click = e => onSortChange("-" + column.dataKey, args, e)
     }
 
     let args = { rowIndex: -1, columnIndex, column, dataKey: column.dataKey, sortAsc, sortDesc }
-    let columnSelected = scrollToColumn === columnIndex
+    let columnFocused = scrollToColumn === columnIndex
 
-    let cc = cn(getCellStyle(args, getRowClassName), getCellStyle(args, column.className), "headerCell", { "selected-column": columnSelected, "sort-asc": sortAsc, "sort-desc": sortDesc, "sortable": !!click })
+    let cc = cn(getCellStyle(args, getRowClassName), getCellStyle(args, column.className), "header-cell", { "focused-column": columnFocused, "sort-asc": sortAsc, "sort-desc": sortDesc, "sortable": !!click })
     let cs = { ...getCellStyle(args, getRowStyle), ...getCellStyle(args, column.style) }
 
     let hasSplitter = !column.disableResize && stars[columnIndex] === 0
@@ -207,15 +208,16 @@ export const Table = memo(props => {
     let column = columns[columnIndex]
     let args = { rowIndex, columnIndex, rowData, column, dataKey: column.dataKey }
     let cell = getCellData(args)
-    let rowSelected = scrollToRow === rowIndex
-    let columnSelected = scrollToColumn === columnIndex
-    let cc = cn(getCellStyle(args, getRowClassName), getCellStyle(args, column.className), "cell", { "selected-row": rowSelected, "selected-column": columnSelected, "selected": rowSelected && columnSelected })
+    let rowFocused = scrollToRow === rowIndex
+    let columnFocused = scrollToColumn === columnIndex
+    let cc = cn(getCellStyle(args, getRowClassName), getCellStyle(args, column.className), "cell", { "focused-column": columnFocused, "focused-row": rowFocused, "focused-cell": rowFocused && columnFocused })
     let cs = { ...getCellStyle(args, getRowStyle), ...getCellStyle(args, column.style), ...style }
+    let cellProps = { key, className: cc, style: cs, onClick: () => selectCell(columnIndex, rowIndex), children: cell }
+    if (cellRenderer) cellRenderer(args, cellProps)
+    return (<div {...cellProps} />)
+  }, [columns, rows, scrollToRow, scrollToColumn, getRowClassName, getRowStyle, cellRenderer, widths])
 
-    return (<div key={key} className={cc} style={cs} onClick={() => selectCell(columnIndex, rowIndex)}>{cell}</div>)
-  }, [columns, rows, scrollToRow, scrollToColumn, getRowClassName, getRowStyle, widths])
-
-  let renderNoCells = useCallback(() => (<div className="noCells">{emptyText}</div>), [emptyText])
+  let renderNoCells = useCallback(() => (<div className="no-cells">{emptyText}</div>), [emptyText])
 
   let keyDown = useCallback(event => {
     if (event.altKey || event.ctrlKey || event.shiftKey) return
@@ -270,10 +272,10 @@ export const Table = memo(props => {
   let gridHeight = disableHeader ? height : height - rowHeight
 
   return (
-    <Flex {...rest} box ref={frameRef} className={className} onKeyDown={keyDown}>
+    <Flex {...rest} box ref={frameRef} className={cn("tgt", className, { "interactive": interactive, "striped": striped })} onKeyDown={keyDown}>
 
       {!disableHeader && <Grid
-        className="headerGrid"
+        className="tgt-header"
         width={width - vertScrollBar}
         height={rowHeight}
         cellRenderer={renderHeaderCell}
@@ -285,10 +287,10 @@ export const Table = memo(props => {
         rowHeight={rowHeight}
         rowCount={1}
         scrollLeft={scrollLeft}
-        ref={headerRef} />}
+        ref={headerGridRef} />}
 
       <Grid
-        className="grid"
+        className="tgt-data"
         width={width}
         height={gridHeight}
         cellRenderer={renderCell}
@@ -304,7 +306,7 @@ export const Table = memo(props => {
         onScroll={scroll}
         onSectionRendered={sectionRendered}
         onScrollbarPresenceChange={scrollBarPresenceChanged}
-        ref={clientRef} />
+        ref={dataGridRef} />
 
     </Flex>)
 })
@@ -312,7 +314,7 @@ export const Table = memo(props => {
 Table.defaultProps = {
   rowHeight: 30,
   rows: [],
-  getRowClassName: ({ rowIndex }) => rowIndex % 2 === 0 ? "evenRow" : "oddRow",
+  getRowClassName: ({ rowIndex }) => rowIndex % 2 === 0 ? "even-row" : "odd-row",
   getRowStyle: undefined,
-  emptyText: "No Items"
+  emptyText: "No Data"
 }

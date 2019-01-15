@@ -1,13 +1,9 @@
-.evenRow {
-
-}
-
-.oddRow {
+.tgt.striped .odd-row {
   background-color: rgba(128, 128, 128, 0.1);
 }
 
-.cell,
-.headerCell {
+.tgt .cell,
+.tgt .header-cell {
   display: flex;
   box-sizing: border-box;
   align-items: center;
@@ -17,22 +13,20 @@
   text-overflow: ellipsis;
 }
 
-.cell {
+.tgt .cell {
   justify-content: flex-start;
   overflow: hidden;
 }
 
-.selected-row {
+.tgt.interactive .focused-row {
   background-color: rgba(128, 215, 255, 0.2);
 }
 
-.selected-column {
-}
+.tgt.interactive .focused-column {}
 
-.selected {
-}
+.tgt.interactive .focused-cell {}
 
-.headerCell {
+.tgt .header-cell {
   justify-content: stretch;
   align-content: center;
   border-right: 1px solid rgba(128, 128, 128, 0.2);
@@ -41,15 +35,15 @@
   cursor: default;
 }
 
-.headerCell.sortable {
+.tgt .header-cell.sortable {
   cursor: pointer !important;
 }
 
-.headerCell.headerLeft {
+.tgt .header-cell.header-left {
   justify-content: flex-start;
 }
 
-.headerCell.sort-asc::before {
+.tgt .header-cell.sort-asc::before {
   content: "▲";
   /* content: "△"; */
   margin-left: 0px;
@@ -57,7 +51,7 @@
   font-family: "Segoe UI Symbol";
 }
 
-.headerCell.sort-desc::before {
+.tgt .header-cell.sort-desc::before {
   content: "▼";
   /* content: "▽"; */
   margin-left: 0px;
@@ -65,42 +59,32 @@
   font-family: "Segoe UI Symbol";
 }
 
-.cell.left {
+.tgt .cell.left {
   justify-content: flex-start;
 }
 
-.headerCell.headerCenter {
+.tgt .header-cell.header-center {
   justify-content: center;
 }
 
-.cell.center {
+.tgt .cell.center {
   justify-content: center;
 }
 
-.headerCell.headerRight {
+.tgt .header-cell.header-right {
   justify-content: flex-end;
 }
 
-.cell.right {
+.tgt .cell.right {
   justify-content: flex-end;
 }
 
-.bp3-dark .headerCell {
+.bp3-dark .tgt .header-cell {
   background-color: #222;
   color: white;
 }
 
-.headerGrid {
-  overflow-x: hidden !important;
-  overflow-y: hidden !important;
-  outline: none;
-}
-
-.grid {
-  outline: none
-}
-
-.noCells {
+.tgt .no-cells {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -113,7 +97,7 @@
   color: #bdbdbd;
 }
 
-.headerCell .splitter {
+.tgt .header-cell .splitter {
   position: absolute;
   right: 0;
   top: 0;
@@ -126,13 +110,23 @@
   z-index: 1000;
 }
 
-.bp3-dark .client {
+.bp3-dark .tgt {
   background-color: #222;
   color: white;
 }
 
-.client {
+.tgt {
   background-color: white;
   font-family: 'Maven Pro';
   font-size: 13px;
+}
+
+.tgt-header {
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  outline: none;
+}
+
+.tgt-data {
+  outline: none
 }
