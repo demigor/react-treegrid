@@ -1,2 +1,2 @@
-﻿export * from './TreeGrid'
+﻿export * from './Table'
 export * from './Column'

@@ -41,6 +41,10 @@
   cursor: default;
 }
 
+.headerCell.sortable {
+  cursor: pointer !important;
+}
+
 .headerCell.headerLeft {
   justify-content: flex-start;
 }

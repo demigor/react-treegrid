@@ -2,9 +2,10 @@ import React, { useRef, memo, useCallback, useState, useEffect, useLayoutEffect,
 import cn from 'classnames'
 import Grid from 'react-virtualized/dist/commonjs/Grid'
 import Draggable from 'react-draggable'
+import { Flex } from '../flex'
 import { useSize } from './Hooks'
 import 'react-virtualized/styles.css'
-import './TreeGrid.css'
+import './Table.css'
 
 
 function getStar(star) {
@@ -69,7 +70,7 @@ const stateSetup = {
   widths: []
 }
 
-export const TreeGrid = memo(props => {
+export const Table = memo(props => {
   let frameRef = useRef()
   let { width = 0, height = 0 } = useSize(frameRef)
 
@@ -78,7 +79,7 @@ export const TreeGrid = memo(props => {
   let headerRef = useRef()
   let clientRef = useRef()
 
-  let { rowHeight, rows, className, getRowStyle, getRowClassName, children, scrollToColumn: stc, scrollToRow: str, sortBy, emptyText, ...rest } = props
+  let { rowHeight, rows, className, getRowStyle, getRowClassName, children, scrollToColumn: stc, scrollToRow: str, sortBy, emptyText, disableHeader, onSort, onSelect, ...rest } = props
   let rowCount = rows && rows.length
 
   let sorting = useMemo(() => sortBy && Array.isArray(sortBy) ? sortBy : (sortBy || "").split(','), [sortBy])
@@ -140,6 +141,7 @@ export const TreeGrid = memo(props => {
 
   function selectCell(scrollToColumn, scrollToRow) {
     setState(s => ({ ...s, scrollToColumn, scrollToRow }))
+    if (onSelect) onSelect({ row: scrollToRow, column: scrollToColumn })
   }
 
   function resizeColumn(index, delta) {
@@ -168,8 +170,6 @@ export const TreeGrid = memo(props => {
 
   let renderHeaderCell = useCallback(({ columnIndex, key, style }) => {
     let column = columns[columnIndex]
-    let args = { rowIndex: -1, columnIndex, column, dataKey: column.dataKey }
-    let columnSelected = scrollToColumn === columnIndex
     let sortAsc = false
     let sortDesc = false
 
@@ -179,13 +179,24 @@ export const TreeGrid = memo(props => {
       sortDesc = true
     }
 
-    let cc = cn(getCellStyle(args, getRowClassName), getCellStyle(args, column.className), "headerCell", { "selected-column": columnSelected, "sort-asc": sortAsc, "sort-desc": sortDesc })
+    let click
+    if (onSort && !column.disableSort) {
+      if (sortDesc)
+        click = e => onSort(column.dataKey, args, e)
+      else
+        click = e => onSort("-" + column.dataKey, args, e)
+    }
+
+    let args = { rowIndex: -1, columnIndex, column, dataKey: column.dataKey, sortAsc, sortDesc }
+    let columnSelected = scrollToColumn === columnIndex
+
+    let cc = cn(getCellStyle(args, getRowClassName), getCellStyle(args, column.className), "headerCell", { "selected-column": columnSelected, "sort-asc": sortAsc, "sort-desc": sortDesc, "sortable": !!click })
     let cs = { ...getCellStyle(args, getRowStyle), ...getCellStyle(args, column.style) }
 
     let hasSplitter = !column.disableResize && stars[columnIndex] === 0
     let splitter = hasSplitter && <Draggable axis="x" position={{ x: 0 }} zIndex={999} onStop={() => recalcStarColumns()} onDrag={(e, { deltaX }) => resizeColumn(columnIndex, deltaX)}><div className="splitter" /></Draggable>
 
-    return (<div key={key} className={cc} style={style} >
+    return (<div key={key} className={cc} style={style} onClick={click}>
       <div className="content" style={cs}>{column.label}</div>
       {splitter}
     </div>)
@@ -252,14 +263,16 @@ export const TreeGrid = memo(props => {
 
     if (col !== scrollToColumn || row !== scrollToRow) {
       event.preventDefault()
-      setState(s => ({ ...s, scrollToColumn: col, scrollToRow: row }))
+      selectCell(col, row)
     }
   }, [columnCount, rowCount, scrollToColumn, scrollToRow])
 
-  return (
-    <div {...rest} ref={frameRef} className={className} onKeyDown={keyDown}>
+  let gridHeight = disableHeader ? height : height - rowHeight
 
-      <Grid
+  return (
+    <Flex {...rest} box ref={frameRef} className={className} onKeyDown={keyDown}>
+
+      {!disableHeader && <Grid
         className="headerGrid"
         width={width - vertScrollBar}
         height={rowHeight}
@@ -272,12 +285,12 @@ export const TreeGrid = memo(props => {
         rowHeight={rowHeight}
         rowCount={1}
         scrollLeft={scrollLeft}
-        ref={headerRef} />
+        ref={headerRef} />}
 
       <Grid
         className="grid"
         width={width}
-        height={height - rowHeight}
+        height={gridHeight}
         cellRenderer={renderCell}
         noContentRenderer={renderNoCells}
         columnWidth={getColumnWidth}
@@ -293,10 +306,10 @@ export const TreeGrid = memo(props => {
         onScrollbarPresenceChange={scrollBarPresenceChanged}
         ref={clientRef} />
 
-    </div>)
+    </Flex>)
 })
 
-TreeGrid.defaultProps = {
+Table.defaultProps = {
   rowHeight: 30,
   rows: [],
   getRowClassName: ({ rowIndex }) => rowIndex % 2 === 0 ? "evenRow" : "oddRow",
